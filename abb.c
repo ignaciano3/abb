@@ -42,6 +42,7 @@ size_t abb_cantidad(const abb_t *arbol) {
 }
 
 nodo_t ** buscar_nodo(const abb_t* arbol, const char *clave){
+    // El problema es buscar la raiz ya que no puedo poner &arbol->raiz
     nodo_t *nodo = arbol->raiz;
 
     while (nodo != NULL) {
@@ -92,6 +93,7 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
 }
 
 bool abb_pertenece(const abb_t *arbol, const char *clave) {
+    // aca tambien queda feo el tema de la raiz
     if (arbol->raiz == NULL) return false;
     if (arbol->cmp(arbol->raiz->clave, clave) == 0) return true;
     nodo_t *nodo = *buscar_nodo(arbol, clave);
@@ -101,6 +103,7 @@ bool abb_pertenece(const abb_t *arbol, const char *clave) {
 }
 
 void *abb_obtener(const abb_t *arbol, const char *clave) {
+    // aca tambien queda feo el tema de la raiz
     if (arbol->raiz == NULL) return NULL;
     if (arbol->cmp(arbol->raiz->clave, clave) == 0) return arbol->raiz->dato;
     nodo_t *nodo = *buscar_nodo(arbol, clave);
@@ -140,6 +143,7 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
 }
 
 void abb_destruir(abb_t *arbol) {
+    // falla cuando llega a la raiz
     nodo_t * nodo = arbol->raiz;
     while (arbol->cantidad > 0){
         void * dato = abb_borrar(arbol, arbol->raiz->clave);
