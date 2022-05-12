@@ -42,7 +42,7 @@ size_t abb_cantidad(const abb_t *arbol) {
 }
 
 nodo_t ** buscar_nodo(const abb_t* arbol, const char *clave){
-    // El problema es buscar la raiz ya que no puedo poner &arbol->raiz
+    // Suponiendo que no se busca la raiz
     nodo_t *nodo = arbol->raiz;
 
     while (nodo != NULL) {
