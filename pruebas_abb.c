@@ -20,6 +20,8 @@ static void prueba_abb_basico(){
 
     print_test("Arbol obtener clave 1 es valor 1", abb_obtener(abb, clave_1) == &valor_1);
     print_test("Arbol obtener clave 2 es valor 2", abb_obtener(abb, clave_2) == &valor_2);
+
+    abb_destruir(abb);
 }
 
 int main(){

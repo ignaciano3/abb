@@ -73,6 +73,14 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
         return true;
     }
 
+    // Caso nodo es la raiz
+    if (arbol->cmp(clave, arbol->raiz->clave) == 0){
+        if (arbol->destruir_dato){
+            arbol->destruir_dato(arbol->raiz->dato);
+        }
+        arbol->raiz->dato = dato;
+    }
+
     nodo_t **puntero_a_ubicacion = buscar_nodo(arbol, clave);
     nodo_t *nodo = *puntero_a_ubicacion;
     if (nodo == NULL){
@@ -96,6 +104,7 @@ bool abb_pertenece(const abb_t *arbol, const char *clave) {
     // aca tambien queda feo el tema de la raiz
     if (arbol->raiz == NULL) return false;
     if (arbol->cmp(arbol->raiz->clave, clave) == 0) return true;
+
     nodo_t *nodo = *buscar_nodo(arbol, clave);
     if (nodo != NULL && arbol->cmp(nodo->clave, clave) == 0)
         return true;
@@ -106,13 +115,20 @@ void *abb_obtener(const abb_t *arbol, const char *clave) {
     // aca tambien queda feo el tema de la raiz
     if (arbol->raiz == NULL) return NULL;
     if (arbol->cmp(arbol->raiz->clave, clave) == 0) return arbol->raiz->dato;
+
     nodo_t *nodo = *buscar_nodo(arbol, clave);
     return nodo->dato;
 }
 
 void *abb_borrar(abb_t *arbol, const char *clave) {
     //tengo q ver el caso si el nodo es la raiz
-    nodo_t ** pNodo = buscar_nodo(arbol, clave);
+    nodo_t **pNodo;
+    if (arbol->cmp(arbol->raiz->clave, clave) == 0){
+        pNodo = &arbol->raiz;
+    } else {
+        pNodo = buscar_nodo(arbol, clave);
+    }
+
     if (*pNodo == NULL) return NULL;
 
     nodo_t *nodo = *pNodo;
@@ -126,6 +142,7 @@ void *abb_borrar(abb_t *arbol, const char *clave) {
         // cuando tengo hijo izq y der
     }
     arbol->cantidad--;
+    free(nodo->clave);
     free(nodo);
     return dato;
 }
@@ -144,7 +161,6 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
 
 void abb_destruir(abb_t *arbol) {
     // falla cuando llega a la raiz
-    nodo_t * nodo = arbol->raiz;
     while (arbol->cantidad > 0){
         void * dato = abb_borrar(arbol, arbol->raiz->clave);
         if (arbol->destruir_dato)
