@@ -73,15 +73,13 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
         return true;
     }
 
-    // Caso nodo es la raiz
+    nodo_t **puntero_a_ubicacion;
     if (arbol->cmp(clave, arbol->raiz->clave) == 0){
-        if (arbol->destruir_dato){
-            arbol->destruir_dato(arbol->raiz->dato);
-        }
-        arbol->raiz->dato = dato;
+        puntero_a_ubicacion = &arbol->raiz;
+    } else {
+        puntero_a_ubicacion = buscar_nodo(arbol, clave);
     }
 
-    nodo_t **puntero_a_ubicacion = buscar_nodo(arbol, clave);
     nodo_t *nodo = *puntero_a_ubicacion;
     if (nodo == NULL){
         *puntero_a_ubicacion = crear_nodo(clave, dato);
@@ -101,7 +99,7 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
 }
 
 bool abb_pertenece(const abb_t *arbol, const char *clave) {
-    // aca tambien queda feo el tema de la raiz
+
     if (arbol->raiz == NULL) return false;
     if (arbol->cmp(arbol->raiz->clave, clave) == 0) return true;
 
@@ -112,7 +110,7 @@ bool abb_pertenece(const abb_t *arbol, const char *clave) {
 }
 
 void *abb_obtener(const abb_t *arbol, const char *clave) {
-    // aca tambien queda feo el tema de la raiz
+
     if (arbol->raiz == NULL) return NULL;
     if (arbol->cmp(arbol->raiz->clave, clave) == 0) return arbol->raiz->dato;
 
@@ -121,7 +119,7 @@ void *abb_obtener(const abb_t *arbol, const char *clave) {
 }
 
 void *abb_borrar(abb_t *arbol, const char *clave) {
-    //tengo q ver el caso si el nodo es la raiz
+
     nodo_t **pNodo;
     if (arbol->cmp(arbol->raiz->clave, clave) == 0){
         pNodo = &arbol->raiz;
@@ -160,7 +158,6 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
 }
 
 void abb_destruir(abb_t *arbol) {
-    // falla cuando llega a la raiz
     while (arbol->cantidad > 0){
         void * dato = abb_borrar(arbol, arbol->raiz->clave);
         if (arbol->destruir_dato)
