@@ -2,6 +2,7 @@
 #include "testing.h"
 #include "stdio.h"
 #include <string.h>
+#define LARGO_PRUEBA_VOLUMEN 10000
 
 static void prueba_abb_basico(){
     abb_t *abb = abb_crear(strcmp, NULL);
@@ -24,8 +25,40 @@ static void prueba_abb_basico(){
     abb_destruir(abb);
 }
 
+bool visitador(const char *clave, void *dato, void *extra){
+    //printf("%c", *clave);
+    if (*(int*)dato >= LARGO_PRUEBA_VOLUMEN*9/10){
+        *(char*)extra = *strdup(clave);
+        return false;
+    }
+
+    return true;
+}
+
+static void prueba_volumen(){
+    abb_t* abb = abb_crear(strcmp, NULL);
+    int arr[LARGO_PRUEBA_VOLUMEN];
+    char* random_letters = malloc(sizeof (char) * LARGO_PRUEBA_VOLUMEN*2);
+    char **claves = malloc(sizeof (char*) *LARGO_PRUEBA_VOLUMEN);
+
+    for (int i = 0; i < LARGO_PRUEBA_VOLUMEN; i++){
+        arr[i] = rand()%LARGO_PRUEBA_VOLUMEN;
+        random_letters[2*i] = (char)(rand() % 79 + '0');
+        claves[i] = &random_letters[2*i];
+        abb_guardar(abb, claves[i], &arr[i]);
+    }
+    char hola;
+    abb_in_order(abb, visitador, &hola);
+    printf("\n%c", hola);
+
+
+
+}
+
 int main(){
     printf("\nPRUEBA ABB BASICO\n");
     prueba_abb_basico();
+    printf("\nPRUEBA ABB VOLUMEN\n");
+    prueba_volumen();
     return 0;
 }

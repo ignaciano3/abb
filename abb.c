@@ -104,9 +104,7 @@ bool abb_pertenece(const abb_t *arbol, const char *clave) {
     if (arbol->cmp(arbol->raiz->clave, clave) == 0) return true;
 
     nodo_t *nodo = *buscar_nodo(arbol, clave);
-    if (nodo != NULL && arbol->cmp(nodo->clave, clave) == 0)
-        return true;
-    return false;
+    return (nodo != NULL) ? true : false;
 }
 
 void *abb_obtener(const abb_t *arbol, const char *clave) {
@@ -132,19 +130,27 @@ void *abb_borrar(abb_t *arbol, const char *clave) {
     nodo_t *nodo = *pNodo;
     void* dato = nodo->dato;
 
+    arbol->cantidad--;
     if (nodo->izq !=NULL && nodo->der == NULL){
         *pNodo = nodo->izq;
     } else if (nodo->der != NULL && nodo->izq == NULL){
         *pNodo = nodo->der;
     } else if (nodo->izq != NULL && nodo->der != NULL){
         // cuando tengo hijo izq y der
+        nodo_t *reemplazante = nodo->izq;
+        while (reemplazante->der != NULL)
+            reemplazante = reemplazante->der;
+        char *clave_reemplazante = strdup(reemplazante->clave);
+        void *dato_reemplazante = abb_borrar(arbol, reemplazante->clave);
+        nodo->clave = clave_reemplazante;
+        nodo->dato = dato_reemplazante;
+        return nodo->dato;
     }
-    arbol->cantidad--;
     free(nodo->clave);
     free(nodo);
     return dato;
 }
-
+#include "stdio.h"
 void inorder(nodo_t *nodo, bool visitar(const char *, void *, void *), void *extra){
     if (nodo == NULL) return;
     inorder(nodo->izq, visitar, extra);
