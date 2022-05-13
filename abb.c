@@ -69,6 +69,7 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
     // caso arbol vacio
     if (arbol->raiz == NULL){
         arbol->raiz = crear_nodo(clave, dato);
+        if (arbol->raiz == NULL) return false;
         arbol->cantidad++;
         return true;
     }
@@ -83,19 +84,16 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
     nodo_t *nodo = *puntero_a_ubicacion;
     if (nodo == NULL){
         *puntero_a_ubicacion = crear_nodo(clave, dato);
+        if (*puntero_a_ubicacion == NULL) return false;
         arbol->cantidad++;
         return true;
-    }
-
-    if (arbol->cmp(nodo->clave, clave) == 0){
+    } else {
         if (arbol->destruir_dato){
             arbol->destruir_dato(nodo->dato);
         }
         nodo->dato = dato;
         return true;
     }
-
-    return false;
 }
 
 bool abb_pertenece(const abb_t *arbol, const char *clave) {
@@ -137,14 +135,7 @@ void *abb_borrar(abb_t *arbol, const char *clave) {
         *pNodo = nodo->der;
     } else if (nodo->izq != NULL && nodo->der != NULL){
         // cuando tengo hijo izq y der
-        nodo_t *reemplazante = nodo->izq;
-        while (reemplazante->der != NULL)
-            reemplazante = reemplazante->der;
-        char *clave_reemplazante = strdup(reemplazante->clave);
-        void *dato_reemplazante = abb_borrar(arbol, reemplazante->clave);
-        nodo->clave = clave_reemplazante;
-        nodo->dato = dato_reemplazante;
-        return nodo->dato;
+        exit(1);
     }
     free(nodo->clave);
     free(nodo);

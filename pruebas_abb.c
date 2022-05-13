@@ -25,32 +25,33 @@ static void prueba_abb_basico(){
     abb_destruir(abb);
 }
 
-bool visitador(const char *clave, void *dato, void *extra){
+bool visitador(const char *clave, void *dato, void *extra) {
     //printf("%c", *clave);
-    if (*(int*)dato >= LARGO_PRUEBA_VOLUMEN*9/10){
-        *(char*)extra = *strdup(clave);
-        return false;
+    if (*clave >= *(char *) extra) {
+        *(char *)extra = *clave;
     }
-
     return true;
 }
 
 static void prueba_volumen(){
     abb_t* abb = abb_crear(strcmp, NULL);
     int arr[LARGO_PRUEBA_VOLUMEN];
-    char* random_letters = malloc(sizeof (char) * LARGO_PRUEBA_VOLUMEN*2);
+    char* random_digits = calloc(LARGO_PRUEBA_VOLUMEN*2, sizeof (char));
     char **claves = malloc(sizeof (char*) *LARGO_PRUEBA_VOLUMEN);
 
     for (int i = 0; i < LARGO_PRUEBA_VOLUMEN; i++){
         arr[i] = rand()%LARGO_PRUEBA_VOLUMEN;
-        random_letters[2*i] = (char)(rand() % 79 + '0');
-        claves[i] = &random_letters[2*i];
+        random_digits[2*i] = (char)(rand() % 79 + '0');
+        claves[i] = &random_digits[2*i];
         abb_guardar(abb, claves[i], &arr[i]);
     }
-    char hola;
-    abb_in_order(abb, visitador, &hola);
-    printf("\n%c", hola);
-
+    char ultimo;
+    abb_in_order(abb, visitador, &ultimo);
+    print_test("Ultimo es ~", ultimo);
+    printf("\n%c", ultimo);
+    free(random_digits);
+    free(claves);
+    abb_destruir(abb);
 
 
 }
