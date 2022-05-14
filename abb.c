@@ -55,7 +55,6 @@ nodo_t** buscar_nodo(nodo_t **puntero_nodo, const char * clave, abb_comparar_cla
     return puntero_nodo;
 }
 
-
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
     nodo_t** puntero_nodo = buscar_nodo(&arbol->raiz, clave, arbol->cmp);
     if (*puntero_nodo == NULL){
@@ -74,7 +73,7 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
 bool abb_pertenece(const abb_t *arbol, const char *clave) {
     nodo_t *nodo = arbol->raiz;
     nodo_t** puntero_nodo = buscar_nodo(&nodo, clave, arbol->cmp);
-    return (*puntero_nodo != NULL) ? true : false;
+    return *puntero_nodo != NULL;
 }
 
 void *abb_obtener(const abb_t *arbol, const char *clave) {
