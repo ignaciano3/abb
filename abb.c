@@ -53,6 +53,12 @@ nodo_t** buscar_nodo(nodo_t **puntero_nodo, const char * clave, abb_comparar_cla
     return puntero_nodo;
 }
 
+nodo_t** nodo_min_clave(nodo_t ** puntero_nodo_min){
+    if ((*puntero_nodo_min)->izq)
+        puntero_nodo_min = nodo_min_clave(&(*puntero_nodo_min)->izq);
+    return puntero_nodo_min;
+}
+
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
     nodo_t** puntero_nodo = buscar_nodo(&arbol->raiz, clave, arbol->cmp);
     if (*puntero_nodo == NULL){
@@ -80,25 +86,32 @@ void *abb_obtener(const abb_t *arbol, const char *clave) {
     return (*puntero_nodo)->dato;
 }
 
-void *abb_borrar(abb_t *arbol, const char *clave) {
-    nodo_t** puntero_nodo = buscar_nodo(&arbol->raiz, clave, arbol->cmp);
+char* borrar_nodo(nodo_t **puntero_nodo){
     if (*puntero_nodo == NULL) return NULL;
 
     nodo_t *nodo = *puntero_nodo;
-    void* dato = nodo->dato;
-    arbol->cantidad--;
-
     if (nodo->izq !=NULL && nodo->der == NULL){
         *puntero_nodo = nodo->izq;
     } else if (nodo->der != NULL && nodo->izq == NULL){
         *puntero_nodo = nodo->der;
-    } else if (nodo->izq != NULL && nodo->der != NULL){
-        // cuando tengo hijo izq y der
-        exit(1);
-    }
 
+    } else if (nodo->izq != NULL && nodo->der != NULL){
+        *puntero_nodo = nodo->der;
+        char * clave_guardar = (*puntero_nodo)->clave;
+        void* dato_guardar = (*puntero_nodo)->dato;
+
+    }
     free(nodo->clave);
     free(nodo);
+
+}
+
+void *abb_borrar(abb_t *arbol, const char *clave) {
+    nodo_t** puntero_nodo = buscar_nodo(&arbol->raiz, clave, arbol->cmp);
+    void* dato = (*puntero_nodo)->dato;
+    borrar_nodo(puntero_nodo);
+
+    arbol->cantidad--;
     return dato;
 }
 

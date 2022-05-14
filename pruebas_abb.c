@@ -6,8 +6,8 @@
 
 static void prueba_abb_basico(){
     abb_t *abb = abb_crear(strcmp, NULL);
-    char *clave_1 = "clave1", *clave_2 = "clave2";
-    int valor_1 = 1, valor_2 = 2;
+    char *clave_1 = "clave1", *clave_2 = "clave2", *clave_0 = "clave0";
+    int valor_1 = 1, valor_2 = 2, valor_0 = 0;
 
     print_test("Arbol vacio", abb_cantidad(abb) == 0);
     print_test("Clave 1 no pertenece", !abb_pertenece(abb, clave_1));
@@ -22,6 +22,9 @@ static void prueba_abb_basico(){
     print_test("Arbol obtener clave 1 es valor 1", abb_obtener(abb, clave_1) == &valor_1);
     print_test("Arbol obtener clave 2 es valor 2", abb_obtener(abb, clave_2) == &valor_2);
 
+    //abb_guardar(abb, clave_0, &valor_0);
+    //print_test("Arbol obtener clave 0 es valor 0", abb_obtener(abb, clave_0) == &valor_0);
+    //abb_borrar(abb, clave_1);
     abb_destruir(abb);
 }
 
@@ -60,6 +63,6 @@ int main(){
     printf("\nPRUEBA ABB BASICO\n");
     prueba_abb_basico();
     printf("\nPRUEBA ABB VOLUMEN\n");
-    prueba_volumen();
+    //prueba_volumen();
     return 0;
 }
