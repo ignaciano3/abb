@@ -44,9 +44,7 @@ size_t abb_cantidad(const abb_t *arbol) {
 nodo_t** buscar_nodo(nodo_t **puntero_nodo, const char * clave, abb_comparar_clave_t cmp){
     if (*puntero_nodo == NULL){
         return puntero_nodo;
-    }
-
-    if (cmp(clave, (*puntero_nodo)->clave) < 0){
+    } else if (cmp(clave, (*puntero_nodo)->clave) < 0){
         puntero_nodo = buscar_nodo(&(*puntero_nodo)->izq, clave, cmp);
     } else if (cmp(clave, (*puntero_nodo)->clave) > 0){
         puntero_nodo = buscar_nodo(&(*puntero_nodo)->der, clave, cmp);

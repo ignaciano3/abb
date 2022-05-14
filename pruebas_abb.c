@@ -60,6 +60,6 @@ int main(){
     printf("\nPRUEBA ABB BASICO\n");
     prueba_abb_basico();
     printf("\nPRUEBA ABB VOLUMEN\n");
-    //prueba_volumen();
+    prueba_volumen();
     return 0;
 }
