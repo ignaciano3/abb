@@ -53,12 +53,6 @@ nodo_t** buscar_nodo(nodo_t **puntero_nodo, const char * clave, abb_comparar_cla
     return puntero_nodo;
 }
 
-nodo_t** nodo_min_clave(nodo_t ** puntero_nodo_min){
-    if ((*puntero_nodo_min)->izq)
-        puntero_nodo_min = nodo_min_clave(&(*puntero_nodo_min)->izq);
-    return puntero_nodo_min;
-}
-
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
     nodo_t** puntero_nodo = buscar_nodo(&arbol->raiz, clave, arbol->cmp);
     if (*puntero_nodo == NULL){
@@ -83,39 +77,41 @@ bool abb_pertenece(const abb_t *arbol, const char *clave) {
 void *abb_obtener(const abb_t *arbol, const char *clave) {
     nodo_t *nodo = arbol->raiz;
     nodo_t** puntero_nodo = buscar_nodo(&nodo, clave, arbol->cmp);
-    return (*puntero_nodo)->dato;
+    return (*puntero_nodo) ? (*puntero_nodo)->dato : NULL;
 }
 
-char* borrar_nodo(nodo_t **puntero_nodo){
-    if (*puntero_nodo == NULL) return NULL;
-
-    nodo_t *nodo = *puntero_nodo;
-    if (nodo->izq !=NULL && nodo->der == NULL){
-        *puntero_nodo = nodo->izq;
-    } else if (nodo->der != NULL && nodo->izq == NULL){
-        *puntero_nodo = nodo->der;
-
-    } else if (nodo->izq != NULL && nodo->der != NULL){
-        *puntero_nodo = nodo->der;
-        char * clave_guardar = (*puntero_nodo)->clave;
-        void* dato_guardar = (*puntero_nodo)->dato;
-
-    }
-    free(nodo->clave);
-    free(nodo);
-
-}
 
 void *abb_borrar(abb_t *arbol, const char *clave) {
     nodo_t** puntero_nodo = buscar_nodo(&arbol->raiz, clave, arbol->cmp);
+    if (*puntero_nodo == NULL) return NULL;
     void* dato = (*puntero_nodo)->dato;
-    borrar_nodo(puntero_nodo);
+    nodo_t *nodo = *puntero_nodo;
+
+    if (nodo->izq == NULL && nodo->der == NULL){
+        *puntero_nodo = NULL;
+    } else if (nodo->izq !=NULL && nodo->der == NULL){
+        *puntero_nodo = nodo->izq;
+    } else if (nodo->der != NULL && nodo->izq == NULL){
+        *puntero_nodo = nodo->der;
+    } else if (nodo->izq != NULL && nodo->der != NULL){
+        nodo_t **nodoMaxIzq = buscar_nodo(&arbol->raiz, (*puntero_nodo)->izq->clave, arbol->cmp);
+        while ((*nodoMaxIzq)->der != NULL){
+            (*nodoMaxIzq) = (*nodoMaxIzq)->der;
+        }
+        char* nodoMaxIzq_clave = strdup((*nodoMaxIzq)->clave);
+        void *nodoMaxIzq_dato = abb_borrar(arbol, nodoMaxIzq_clave);
+        free(nodo->clave);
+        (*puntero_nodo)->clave = nodoMaxIzq_clave;
+        (*puntero_nodo)->dato = nodoMaxIzq_dato;
+        return dato;
+    }
+    free(nodo->clave);
+    free(nodo);
 
     arbol->cantidad--;
     return dato;
 }
 
-#include "stdio.h"
 void inorder(nodo_t *nodo, bool visitar(const char *, void *, void *), void *extra){
     if (nodo == NULL) return;
     inorder(nodo->izq, visitar, extra);
