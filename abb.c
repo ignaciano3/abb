@@ -1,7 +1,7 @@
 #include "abb.h"
 #include "pila.h"
 #include <string.h>
-#include "stdio.h"
+#include <stdlib.h>
 
 typedef struct nodo nodo_t;
 
