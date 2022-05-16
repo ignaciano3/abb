@@ -148,7 +148,6 @@ struct abb_iter {
 };
 
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
-    if (arbol->raiz == NULL) return NULL;
     abb_iter_t *iter = malloc(sizeof (abb_iter_t));
     if (iter == NULL) return NULL;
     pila_t *pila = pila_crear();
@@ -156,7 +155,8 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
         free(iter);
         return NULL;
     }
-    pila_apilar(pila, arbol->raiz);
+    if (arbol->raiz)
+        pila_apilar(pila, arbol->raiz);
     iter->arbol = arbol;
     iter->pila = pila;
     iter->actual = NULL;

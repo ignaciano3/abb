@@ -1,8 +1,6 @@
 #include "abb.h"
 #include "testing.h"
-#include "stdio.h"
 #include <string.h>
-#define LARGO_PRUEBA_VOLUMEN 10000
 
 static void prueba_abb_basico(){
     abb_t *abb = abb_crear(strcmp, NULL);
@@ -65,10 +63,7 @@ static void prueba_iter(){
     abb_destruir(abb);
 }
 
-int main(){
-    printf("\nPRUEBA ABB BASICO\n");
+void pruebas_abb_estudiante(){
     prueba_abb_basico();
-    printf("\nPRUEBA ABB ITER\n");
     prueba_iter();
-    return 0;
 }
