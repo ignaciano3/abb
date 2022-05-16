@@ -155,18 +155,27 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
         free(iter);
         return NULL;
     }
-    if (arbol->raiz)
-        pila_apilar(pila, arbol->raiz);
+
+    if (arbol->raiz) {
+        iter->actual = arbol->raiz;
+        if (arbol->raiz->der) {
+            pila_apilar(pila, arbol->raiz->der);
+        }
+        if (arbol->raiz->izq){
+            pila_apilar(pila, arbol->raiz->izq);
+        }
+    }
+
     iter->arbol = arbol;
     iter->pila = pila;
-    iter->actual = NULL;
-    // Como empiezo en NULL tengo que avanzar 1 vez
-    abb_iter_in_avanzar(iter);
     return iter;
 }
 
 bool abb_iter_in_avanzar(abb_iter_t *iter) {
-    if (pila_esta_vacia(iter->pila)) return false;
+    if (pila_esta_vacia(iter->pila)){
+        iter->actual = NULL;
+        return false;
+    }
     iter->actual = pila_desapilar(iter->pila);
     if (iter->actual->der)
         pila_apilar(iter->pila, iter->actual->der);
@@ -176,11 +185,11 @@ bool abb_iter_in_avanzar(abb_iter_t *iter) {
 }
 
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter) {
-    return iter->actual->clave;
+    return (iter->actual) ? iter->actual->clave : NULL;
 }
 
 bool abb_iter_in_al_final(const abb_iter_t *iter) {
-    return pila_esta_vacia(iter->pila);
+    return iter->actual == NULL;
 }
 
 void abb_iter_in_destruir(abb_iter_t *iter) {
