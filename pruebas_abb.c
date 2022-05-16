@@ -35,41 +35,40 @@ static void prueba_abb_basico(){
     abb_destruir(abb);
 }
 
-bool visitador(const char *clave, void *dato, void *extra) {
-    //printf("%c", *clave);
-    if (*clave >= *(char *) extra) {
-        *(char *)extra = *clave;
-    }
-    return true;
-}
-
-static void prueba_volumen(){
+static void prueba_iter(){
     abb_t* abb = abb_crear(strcmp, NULL);
-    int arr[LARGO_PRUEBA_VOLUMEN];
-    char* random_digits = calloc(LARGO_PRUEBA_VOLUMEN*2, sizeof (char));
-    char **claves = malloc(sizeof (char*) *LARGO_PRUEBA_VOLUMEN);
+    char *a = "a", *b = "b", *c = "c", *d= "d", *e="e" ;
+    int va = 1, vb = 2, vc = 3, vd = 4, ve = 5;
+    //      c
+    //   a     d
+    //     b     e
 
-    for (int i = 0; i < LARGO_PRUEBA_VOLUMEN; i++){
-        arr[i] = rand()%LARGO_PRUEBA_VOLUMEN;
-        random_digits[2*i] = (char)(rand() % 79 + '0');
-        claves[i] = &random_digits[2*i];
-        abb_guardar(abb, claves[i], &arr[i]);
-    }
-    char ultimo;
-    abb_in_order(abb, visitador, &ultimo);
-    print_test("Ultimo es ~", ultimo);
-    printf("\n%c", ultimo);
-    free(random_digits);
-    free(claves);
+    abb_guardar(abb,c, &vc);
+    abb_guardar(abb,d, &vd);
+    abb_guardar(abb,a, &va);
+    abb_guardar(abb,b, &vb);
+    abb_guardar(abb,e, &ve);
+
+    abb_iter_t *iter = abb_iter_in_crear(abb);
+    print_test("Raiz es c", strcmp(abb_iter_in_ver_actual(iter), c) == 0);
+    print_test("Avanzar es true", abb_iter_in_avanzar(iter));
+    print_test("Nodo es a", strcmp(abb_iter_in_ver_actual(iter), a) == 0);
+    print_test("Iter no esta al final", !abb_iter_in_al_final(iter));
+    abb_iter_in_avanzar(iter);
+    print_test("Nodo es b", strcmp(abb_iter_in_ver_actual(iter), b) == 0);
+    abb_iter_in_avanzar(iter);
+    print_test("Nodo es d", strcmp(abb_iter_in_ver_actual(iter), d) == 0);
+    abb_iter_in_avanzar(iter);
+    print_test("Nodo es e", strcmp(abb_iter_in_ver_actual(iter), e) == 0);
+    print_test("Iter esta al final", abb_iter_in_al_final(iter));
+    abb_iter_in_destruir(iter);
     abb_destruir(abb);
-
-
 }
 
 int main(){
     printf("\nPRUEBA ABB BASICO\n");
     prueba_abb_basico();
-    printf("\nPRUEBA ABB VOLUMEN\n");
-    //prueba_volumen();
+    printf("\nPRUEBA ABB ITER\n");
+    prueba_iter();
     return 0;
 }
