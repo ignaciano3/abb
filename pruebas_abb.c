@@ -2,6 +2,7 @@
 #include "testing.h"
 #include <string.h>
 #include <stdio.h>
+#define LARGO_PRUEBA_VOLUMEN 10000
 
 static void prueba_abb_basico(){
     abb_t *abb = abb_crear(strcmp, NULL);
@@ -26,27 +27,29 @@ static void prueba_abb_basico(){
 
     abb_guardar(abb, clave_0, &valor_0);
     print_test("Arbol obtener clave 0 es valor 0", abb_obtener(abb, clave_0) == &valor_0);
-
     print_test("Arbol borrar clave 1 es valor 1", abb_borrar(abb, clave_1) == &valor_1);
     print_test("Arbol borrar clave 2 es valor 2", abb_borrar(abb, clave_2) == &valor_2);
     print_test("Arbol obtener clave 2 ahora es NULL", abb_obtener(abb, clave_2) == NULL);
     print_test("Arbol obtener clave 0 es valor 0", abb_obtener(abb, clave_0) == &valor_0);
+
     abb_destruir(abb);
 }
 
 static void prueba_iter(){
     abb_t* abb = abb_crear(strcmp, NULL);
-    char *a = "a", *b = "b", *c = "c", *d= "d", *e="e" ;
-    int va = 1, vb = 2, vc = 3, vd = 4, ve = 5;
-    //      c
-    //   a     d
-    //     b     e
+    char *a = "a", *b = "b", *c = "c", *d= "d", *e = "e", *f = "f", *g = "g";
+    int va = 1, vb = 2, vc = 3, vd = 4, ve = 5, vf=6, vg=7;
+    //       d
+    //   b        f
+    // a   c    e   g
 
-    abb_guardar(abb,c, &vc);
     abb_guardar(abb,d, &vd);
-    abb_guardar(abb,a, &va);
     abb_guardar(abb,b, &vb);
+    abb_guardar(abb,f, &vf);
+    abb_guardar(abb,c, &vc);
+    abb_guardar(abb,a, &va);
     abb_guardar(abb,e, &ve);
+    abb_guardar(abb,g, &vg);
 
     abb_iter_t *iter = abb_iter_in_crear(abb);
     print_test("Primer nodo es a", strcmp(abb_iter_in_ver_actual(iter), a) == 0);
@@ -60,9 +63,60 @@ static void prueba_iter(){
     abb_iter_in_avanzar(iter);
     print_test("Quinto nodo es e", strcmp(abb_iter_in_ver_actual(iter), e) == 0);
     abb_iter_in_avanzar(iter);
+    print_test("Sexto nodo es f", strcmp(abb_iter_in_ver_actual(iter), f) == 0);
+    abb_iter_in_avanzar(iter);
+    print_test("Septimo nodo es g", strcmp(abb_iter_in_ver_actual(iter), g) == 0);
+    abb_iter_in_avanzar(iter);
+
     print_test("Iter esta al final", abb_iter_in_al_final(iter));
+    print_test("Avanzar es false", !abb_iter_in_avanzar(iter));
+
     abb_iter_in_destruir(iter);
     abb_destruir(abb);
+}
+
+bool visitador(const char *clave, void *dato, void *extra) {
+    strcat((char*)extra, clave);
+    return true;
+}
+
+static void prueba_volumen(){
+    abb_t* abb = abb_crear(strcmp, NULL);
+    int arr[LARGO_PRUEBA_VOLUMEN];
+    char* random_digits = calloc(LARGO_PRUEBA_VOLUMEN*2, sizeof (char));
+    char **claves = malloc(sizeof (char*) *LARGO_PRUEBA_VOLUMEN);
+
+    for (int i = 0; i < LARGO_PRUEBA_VOLUMEN; i++){
+        arr[i] = rand()%LARGO_PRUEBA_VOLUMEN;
+        random_digits[2*i] = (char)(rand() % 79 + '0');
+        claves[i] = &random_digits[2*i];
+        abb_guardar(abb, claves[i], &arr[i]);
+    }
+    char claves_ordenadas[200] ="";
+    abb_in_order(abb, visitador, &claves_ordenadas);
+
+    abb_iter_t *iter = abb_iter_in_crear(abb);
+
+    int i = 0, error = 0;
+    while (!abb_iter_in_al_final(iter)){
+        const char* actual_iter = abb_iter_in_ver_actual(iter);
+        char actual = claves_ordenadas[i];
+        char* actual_puntero = &actual;
+        *(actual_puntero+1) = 0;
+        i++;
+        if (strcmp(actual_puntero, actual_iter) != 0)
+            error++;
+        abb_iter_in_avanzar(iter);
+        // Para ver las claves
+        // printf("%s %s\n", actual_iter, actual_puntero);
+    }
+
+    print_test("Iterador itera bien el arbol", error == 0);
+    free(random_digits);
+    free(claves);
+    abb_destruir(abb);
+
+
 }
 
 void pruebas_abb_estudiante(){
@@ -70,10 +124,7 @@ void pruebas_abb_estudiante(){
     prueba_abb_basico();
     printf("\nPRUEBAS ITER\n");
     prueba_iter();
+    printf("\nPRUEBA VOLUMEN\n");
+    prueba_volumen();
     printf("\n");
-}
-
-int main(){
-    pruebas_abb_estudiante();
-    return 0;
 }
