@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #define _POSIX_C_SOURCE 200809L
+
 typedef struct nodo nodo_t;
 
 struct nodo {
@@ -119,15 +120,14 @@ void *abb_borrar(abb_t *arbol, const char *clave) {
     return dato;
 }
 
-void inorder(nodo_t *nodo, bool visitar(const char *, void *, void *), void *extra){
+void inorder(nodo_t *nodo, bool f(const char *, void *, void *), void *extra){
     if (nodo == NULL) return;
-    inorder(nodo->izq, visitar, extra);
-    visitar(nodo->clave, nodo->dato, extra);
-    inorder(nodo->der, visitar, extra);
+    inorder(nodo->izq, f, extra);
+    f(nodo->clave, nodo->dato, extra);
+    inorder(nodo->der, f, extra);
 }
 
 void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra){
-    if (arbol->raiz == NULL) return;
     inorder(arbol->raiz, visitar, extra);
 }
 

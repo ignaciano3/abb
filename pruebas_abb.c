@@ -2,6 +2,7 @@
 #include "testing.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #define LARGO_PRUEBA_VOLUMEN 10000
 
 static void prueba_abb_basico(){
@@ -100,20 +101,17 @@ static void prueba_volumen(){
     int i = 0, error = 0;
     while (!abb_iter_in_al_final(iter)){
         const char* actual_iter = abb_iter_in_ver_actual(iter);
-        char actual = claves_ordenadas[i];
-        char* actual_puntero = &actual;
-        *(actual_puntero+1) = 0;
-        i++;
-        if (strcmp(actual_puntero, actual_iter) != 0)
+        if (actual_iter[0] != claves_ordenadas[i]){
             error++;
+        }
+        i++;
         abb_iter_in_avanzar(iter);
-        // Para ver las claves
-        // printf("%s %s\n", actual_iter, actual_puntero);
     }
 
     print_test("Iterador itera bien el arbol", error == 0);
     free(random_digits);
     free(claves);
+    abb_iter_in_destruir(iter);
     abb_destruir(abb);
 
 
