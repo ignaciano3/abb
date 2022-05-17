@@ -58,6 +58,7 @@ static void prueba_iter(){
     print_test("Nodo es d", strcmp(abb_iter_in_ver_actual(iter), d) == 0);
     abb_iter_in_avanzar(iter);
     print_test("Nodo es e", strcmp(abb_iter_in_ver_actual(iter), e) == 0);
+    abb_iter_in_avanzar(iter);
     print_test("Iter esta al final", abb_iter_in_al_final(iter));
     abb_iter_in_destruir(iter);
     abb_destruir(abb);

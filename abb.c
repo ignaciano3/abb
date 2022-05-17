@@ -2,7 +2,8 @@
 #include "pila.h"
 #include <string.h>
 #include <stdlib.h>
-
+#include <stdbool.h>
+#define _POSIX_C_SOURCE 200809L
 typedef struct nodo nodo_t;
 
 struct nodo {
@@ -144,52 +145,52 @@ void abb_destruir(abb_t *arbol) {
 struct abb_iter {
     const abb_t *arbol;
     pila_t *pila;
-    nodo_t *actual;
 };
 
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
     abb_iter_t *iter = malloc(sizeof (abb_iter_t));
     if (iter == NULL) return NULL;
+
     pila_t *pila = pila_crear();
     if (pila == NULL){
         free(iter);
         return NULL;
     }
 
-    if (arbol->raiz) {
-        iter->actual = arbol->raiz;
-        if (arbol->raiz->der) {
-            pila_apilar(pila, arbol->raiz->der);
-        }
-        if (arbol->raiz->izq){
-            pila_apilar(pila, arbol->raiz->izq);
-        }
-    }
-
     iter->arbol = arbol;
+
+    nodo_t *nodo = arbol->raiz;
+    while (nodo != NULL){
+        pila_apilar(pila, nodo);
+        nodo = nodo->izq;
+    }
     iter->pila = pila;
     return iter;
 }
 
 bool abb_iter_in_avanzar(abb_iter_t *iter) {
-    if (pila_esta_vacia(iter->pila)){
-        iter->actual = NULL;
+    if (abb_iter_in_al_final(iter)){
         return false;
     }
-    iter->actual = pila_desapilar(iter->pila);
-    if (iter->actual->der)
-        pila_apilar(iter->pila, iter->actual->der);
-    if (iter->actual->izq)
-        pila_apilar(iter->pila, iter->actual->izq);
+    nodo_t *nodo = pila_desapilar(iter->pila);
+    if (nodo->der){
+        nodo = nodo->der;
+        pila_apilar(iter->pila, nodo);
+    }
+
+    while (nodo->izq){
+        nodo = nodo->izq;
+        pila_apilar(iter->pila, nodo);
+    }
     return true;
 }
 
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter) {
-    return (iter->actual) ? iter->actual->clave : NULL;
+    return pila_ver_tope(iter->pila);
 }
 
 bool abb_iter_in_al_final(const abb_iter_t *iter) {
-    return iter->actual == NULL;
+    return pila_esta_vacia(iter->pila);
 }
 
 void abb_iter_in_destruir(abb_iter_t *iter) {
