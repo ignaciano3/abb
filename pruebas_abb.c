@@ -1,6 +1,7 @@
 #include "abb.h"
 #include "testing.h"
 #include <string.h>
+#include <stdio.h>
 
 static void prueba_abb_basico(){
     abb_t *abb = abb_crear(strcmp, NULL);
@@ -48,16 +49,16 @@ static void prueba_iter(){
     abb_guardar(abb,e, &ve);
 
     abb_iter_t *iter = abb_iter_in_crear(abb);
-    print_test("Raiz es c", strcmp(abb_iter_in_ver_actual(iter), c) == 0);
+    print_test("Primer nodo es a", strcmp(abb_iter_in_ver_actual(iter), a) == 0);
     print_test("Avanzar es true", abb_iter_in_avanzar(iter));
-    print_test("Nodo es a", strcmp(abb_iter_in_ver_actual(iter), a) == 0);
+    print_test("Segundo nodo es b", strcmp(abb_iter_in_ver_actual(iter), b) == 0);
     print_test("Iter no esta al final", !abb_iter_in_al_final(iter));
     abb_iter_in_avanzar(iter);
-    print_test("Nodo es b", strcmp(abb_iter_in_ver_actual(iter), b) == 0);
+    print_test("Tercer nodo es c", strcmp(abb_iter_in_ver_actual(iter), c) == 0);
     abb_iter_in_avanzar(iter);
-    print_test("Nodo es d", strcmp(abb_iter_in_ver_actual(iter), d) == 0);
+    print_test("Cuarto nodo es d", strcmp(abb_iter_in_ver_actual(iter), d) == 0);
     abb_iter_in_avanzar(iter);
-    print_test("Nodo es e", strcmp(abb_iter_in_ver_actual(iter), e) == 0);
+    print_test("Quinto nodo es e", strcmp(abb_iter_in_ver_actual(iter), e) == 0);
     abb_iter_in_avanzar(iter);
     print_test("Iter esta al final", abb_iter_in_al_final(iter));
     abb_iter_in_destruir(iter);
@@ -65,6 +66,14 @@ static void prueba_iter(){
 }
 
 void pruebas_abb_estudiante(){
+    printf("\nPRUEBAS ABB BASICO\n");
     prueba_abb_basico();
+    printf("\nPRUEBAS ITER\n");
     prueba_iter();
+    printf("\n");
+}
+
+int main(){
+    pruebas_abb_estudiante();
+    return 0;
 }

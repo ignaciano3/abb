@@ -147,6 +147,8 @@ struct abb_iter {
     pila_t *pila;
 };
 
+#include "stdio.h"
+
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
     abb_iter_t *iter = malloc(sizeof (abb_iter_t));
     if (iter == NULL) return NULL;
@@ -156,10 +158,8 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
         free(iter);
         return NULL;
     }
-
     iter->arbol = arbol;
-
-    nodo_t *nodo = arbol->raiz;
+    nodo_t *nodo = iter->arbol->raiz;
     while (nodo != NULL){
         pila_apilar(pila, nodo);
         nodo = nodo->izq;
@@ -186,7 +186,8 @@ bool abb_iter_in_avanzar(abb_iter_t *iter) {
 }
 
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter) {
-    return pila_ver_tope(iter->pila);
+    nodo_t *actual = pila_ver_tope(iter->pila);
+    return actual->clave;
 }
 
 bool abb_iter_in_al_final(const abb_iter_t *iter) {
