@@ -123,7 +123,7 @@ void *abb_borrar(abb_t *arbol, const char *clave) {
 void inorder(nodo_t *nodo, bool f(const char *, void *, void *), void *extra){
     if (nodo == NULL) return;
     inorder(nodo->izq, f, extra);
-    f(nodo->clave, nodo->dato, extra);
+    if (!f(nodo->clave, nodo->dato, extra)) return;
     inorder(nodo->der, f, extra);
 }
 

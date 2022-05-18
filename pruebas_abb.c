@@ -98,22 +98,22 @@ static void prueba_volumen(){
 
     abb_iter_t *iter = abb_iter_in_crear(abb);
 
-    int i = 0, error = 0;
+    int i = 0;
+    bool error = false;
     while (!abb_iter_in_al_final(iter)){
         const char* actual_iter = abb_iter_in_ver_actual(iter);
         if (actual_iter[0] != claves_ordenadas[i]){
-            error++;
+            error = true;
         }
         i++;
         abb_iter_in_avanzar(iter);
     }
 
-    print_test("Iterador itera bien el arbol", error == 0);
+    print_test("Iterador itera bien el arbol", !error);
     free(random_digits);
     free(claves);
     abb_iter_in_destruir(iter);
     abb_destruir(abb);
-
 
 }
 
