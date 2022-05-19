@@ -120,11 +120,12 @@ void *abb_borrar(abb_t *arbol, const char *clave) {
     return dato;
 }
 
-void inorder(nodo_t *nodo, bool f(const char *, void *, void *), void *extra){
-    if (nodo == NULL) return;
-    inorder(nodo->izq, f, extra);
-    if (!f(nodo->clave, nodo->dato, extra)) return;
-    inorder(nodo->der, f, extra);
+bool inorder(nodo_t *nodo, bool f(const char *, void *, void *), void *extra){
+    if (nodo == NULL) return true;
+    bool seguir = inorder(nodo->izq, f, extra);
+    if (seguir == false || !f(nodo->clave, nodo->dato, extra)) return false;
+    seguir &= inorder(nodo->der, f, extra);
+    return seguir;
 }
 
 void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra){
