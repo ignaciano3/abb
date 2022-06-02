@@ -61,13 +61,13 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
         *puntero_nodo = crear_nodo(clave, dato);
         if (*puntero_nodo == NULL) return false;
         arbol->cantidad++;
-        return true;
+
     } else {
         if (arbol->destruir_dato)
             arbol->destruir_dato((*puntero_nodo)->dato);
         (*puntero_nodo)->dato = dato;
-        return true;
     }
+    return true;
 }
 
 bool abb_pertenece(const abb_t *arbol, const char *clave) {
@@ -99,18 +99,18 @@ void *abb_borrar(abb_t *arbol, const char *clave) {
     } else if (nodo->izq != NULL && nodo->der != NULL){
 
         nodo_t **nodoMaxIzq = buscar_nodo(&arbol->raiz, (*puntero_nodo)->izq->clave, arbol->cmp);
-        nodo_t* izq_max = *nodoMaxIzq;
+        nodo_t* reemplazante = *nodoMaxIzq;
 
-        while (izq_max->der != NULL){
-            izq_max = izq_max->der;
+        while (reemplazante->der != NULL){
+            reemplazante = reemplazante->der;
         }
 
-        char* nodo_izq_max_clave = strdup(izq_max->clave);
-        void* nodo_izq_max_dato = abb_borrar(arbol, nodo_izq_max_clave);
+        char* nodo_max_izq_clave = strdup(reemplazante->clave);
+        void* nodo_max_izq_dato = abb_borrar(arbol, nodo_max_izq_clave);
 
         free(nodo->clave);
-        (*puntero_nodo)->clave = nodo_izq_max_clave;
-        (*puntero_nodo)->dato = nodo_izq_max_dato;
+        (*puntero_nodo)->clave = nodo_max_izq_clave;
+        (*puntero_nodo)->dato = nodo_max_izq_dato;
 
         return dato;
     }
@@ -132,20 +132,36 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
     inorder(arbol->raiz, visitar, extra);
 }
 
+void destruir_postorder(abb_t *arbol, nodo_t *nodo){
+    if (nodo == NULL) return;
+    destruir_postorder(arbol, nodo->izq);
+    destruir_postorder(arbol, nodo->der);
+
+    void *dato = abb_borrar(arbol, nodo->clave);
+    if (arbol->destruir_dato)
+        arbol->destruir_dato(dato);
+
+}
+
 void abb_destruir(abb_t *arbol) {
-    while (arbol->raiz != NULL){
-        void *dato = abb_borrar(arbol, arbol->raiz->clave);
-        if (arbol->destruir_dato)
-            arbol->destruir_dato(dato);
-    }
+    destruir_postorder(arbol, arbol->raiz);
     free(arbol);
 }
+
 
 //---------------ARBOL ITER------------------------//
 
 struct abb_iter {
     pila_t *pila;
 };
+
+/* No entiendo para que esta funcion pero bueno */
+void avanzar_izq(pila_t* pila, nodo_t *nodo){
+    if (nodo->izq){
+        pila_apilar(pila, nodo->izq);
+        avanzar_izq(pila, nodo->izq);
+    }
+}
 
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
     abb_iter_t *iter = malloc(sizeof (abb_iter_t));
@@ -157,9 +173,9 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
         return NULL;
     }
     nodo_t *nodo = arbol->raiz;
-    while (nodo != NULL){
+    if (nodo){
         pila_apilar(pila, nodo);
-        nodo = nodo->izq;
+        avanzar_izq(pila, nodo);
     }
     iter->pila = pila;
     return iter;
@@ -170,17 +186,12 @@ bool abb_iter_in_avanzar(abb_iter_t *iter) {
         return false;
     }
     nodo_t *nodo = pila_desapilar(iter->pila);
-    if (nodo->der){
-        nodo = nodo->der;
-        pila_apilar(iter->pila, nodo);
-    } else {
+    if (!nodo->der)
         return true;
-    }
+    nodo = nodo->der;
+    pila_apilar(iter->pila, nodo);
 
-    while (nodo->izq){
-        nodo = nodo->izq;
-        pila_apilar(iter->pila, nodo);
-    }
+    avanzar_izq(iter->pila, nodo);
     return true;
 }
 

@@ -1,4 +1,5 @@
 #include "abb.h"
+#include "pila.h"
 #include "testing.h"
 #include <string.h>
 #include <stdio.h>
@@ -117,6 +118,40 @@ static void prueba_volumen(){
 
 }
 
+int clave_mas_larga (const char *clave1, const char *clave2){
+    if (strlen(clave1) < strlen(clave2))
+        return 1;
+    else if (strlen(clave1) > strlen(clave2))
+        return -1;
+    else
+        return 0;
+}
+
+void pila_destruir_wrapper(void* pila){
+    pila_destruir(pila);
+}
+
+static void prueba_struct(){
+    char *clave1 ="abcde", *clave2 = "abc", *clave3 = "ab", *clave4 = "no existe";
+
+    pila_t *pila1 = pila_crear();
+    pila_t *pila2 = pila_crear();
+    pila_t *pila3 = pila_crear();
+
+    abb_t *arbol = abb_crear(clave_mas_larga, pila_destruir_wrapper);
+    abb_guardar(arbol, clave1, pila1);
+
+    abb_guardar(arbol, clave2, pila2);
+    abb_guardar(arbol, clave3, pila3);
+    print_test("Clave 1 es pila 1", abb_obtener(arbol, clave1) == pila1);
+    print_test("Clave 2 es pila 2", abb_obtener(arbol, clave2) == pila2);
+    print_test("Clave 3 es pila 3", abb_obtener(arbol, clave3) == pila3);
+    print_test("Cantidad es 3", abb_cantidad(arbol) == 3);
+    print_test("Clave 4 no existe", !abb_pertenece(arbol, clave4));
+    print_test("Borrar clave 2 es pila 2", abb_borrar(arbol, clave2) == pila2);
+    abb_destruir(arbol);
+}
+
 void pruebas_abb_estudiante(){
     printf("\nPRUEBAS ABB BASICO\n");
     prueba_abb_basico();
@@ -124,5 +159,6 @@ void pruebas_abb_estudiante(){
     prueba_iter();
     printf("\nPRUEBA VOLUMEN\n");
     prueba_volumen();
-    printf("\n");
+    printf("\nPRUEBA ABB CON STRUCT AVANZADO\n");
+    prueba_struct();
 }
